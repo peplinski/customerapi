@@ -1,10 +1,13 @@
 package com.rest.customerapi.api.v1.model;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CustomerDTO {
 
-    private Long id;
-    private String name;
+    private String firstname;
+    private String lastname;
+    private String customerUrl;
 }
