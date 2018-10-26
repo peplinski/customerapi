@@ -3,6 +3,7 @@ package com.rest.customerapi.controllers.v1;
 
 import com.rest.customerapi.api.v1.model.CustomerDTO;
 import com.rest.customerapi.services.CustomerService;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,13 +46,13 @@ public class CustomerControllerTest {
 
         //given
         CustomerDTO customer1 = new CustomerDTO();
-        customer1.setFirstname("Michale");
-        customer1.setLastname("Weston");
+        customer1.setFirstName("Michale");
+        customer1.setLastName("Weston");
         customer1.setCustomerUrl("/api/v1/customer/1");
 
         CustomerDTO customer2 = new CustomerDTO();
-        customer2.setFirstname("Sam");
-        customer2.setLastname("Axe");
+        customer2.setFirstName("Sam");
+        customer2.setLastName("Axe");
         customer2.setCustomerUrl("/api/v1/customer/2");
 
         when(customerService.getAllCustomers()).thenReturn(Arrays.asList(customer1, customer2));
@@ -66,8 +68,9 @@ public class CustomerControllerTest {
 
         //given
         CustomerDTO customer1 = new CustomerDTO();
-        customer1.setFirstname("Michale");
-        customer1.setLastname("Weston");
+        customer1.setId(1L);
+        customer1.setFirstName("Michale");
+        customer1.setLastName("Weston");
         customer1.setCustomerUrl("/api/v1/customer/1");
 
         when(customerService.getCustomerById(anyLong())).thenReturn(customer1);
@@ -75,7 +78,7 @@ public class CustomerControllerTest {
         //when
         mockMvc.perform(get("/api/v1/customers/1")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstname", equalTo("Michale")));
+                .andExpect(jsonPath(("$.firstName"), equalTo("Michale")))
+                .andExpect(status().isOk());
     }
 }

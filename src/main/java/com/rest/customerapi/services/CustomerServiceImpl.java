@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerMapper customerMapper;
-    private  final CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
     public CustomerServiceImpl(CustomerMapper customerMapper, CustomerRepository customerRepository) {
         this.customerMapper = customerMapper;
@@ -21,21 +21,22 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<CustomerDTO> getAllCustomers() {
-        return customerRepository.findAll()
+        return customerRepository
+                .findAll()
                 .stream()
-                .map(customerMapper::customerTOCustomerDTO)
+                .map(customer -> {
+                    CustomerDTO customerDTO = customerMapper.customerTOCustomerDTO(customer);
+                    customerDTO.setCustomerUrl("/api/v1/customers/" + customer.getId());
+                    return customerDTO;
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CustomerDTO getCustomerByName(String name) {
-        return customerMapper.customerTOCustomerDTO(customerRepository.findByFirstName(name));
-    }
-
-    @Override
     public CustomerDTO getCustomerById(Long id) {
+
         return customerRepository.findById(id)
                 .map(customerMapper::customerTOCustomerDTO)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(RuntimeException::new); //todo implement better exception handling
     }
 }

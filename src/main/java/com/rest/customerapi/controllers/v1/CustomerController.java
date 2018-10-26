@@ -26,13 +26,8 @@ public class CustomerController {
                 HttpStatus.OK);
     }
 
-    @GetMapping({"{id}"})
+    @GetMapping({"/{id}"})
     public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable Long id){
-        return new ResponseEntity<CustomerDTO>(customerService.getCustomerById(id),HttpStatus.OK);
-    }
-
-    @GetMapping({"name"})
-    public ResponseEntity<CustomerDTO> getCustomerByNAme(@PathVariable String name){
-        return new ResponseEntity<CustomerDTO>(customerService.getCustomerByName(name),HttpStatus.OK);
+        return new ResponseEntity<CustomerDTO>(customerService.getCustomerById(id), HttpStatus.OK);
     }
 }
