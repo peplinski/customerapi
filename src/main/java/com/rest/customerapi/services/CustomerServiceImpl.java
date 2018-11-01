@@ -2,6 +2,8 @@ package com.rest.customerapi.services;
 
 import com.rest.customerapi.api.v1.mapper.CustomerMapper;
 import com.rest.customerapi.api.v1.model.CustomerDTO;
+import com.rest.customerapi.controllers.v1.CategoryController;
+import com.rest.customerapi.controllers.v1.CustomerController;
 import com.rest.customerapi.domain.Customer;
 import com.rest.customerapi.repositories.CustomerRepository;
 
@@ -12,8 +14,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
-
-    String CONSUMERS_API = "/api/v1/customers/";
 
     private final CustomerMapper customerMapper;
     private final CustomerRepository customerRepository;
@@ -30,7 +30,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .stream()
                 .map(customer -> {
                     CustomerDTO customerDTO = customerMapper.customerTOCustomerDTO(customer);
-                    customerDTO.setCustomerUrl(CONSUMERS_API + customer.getId());
+                    customerDTO.setCustomerUrl(getCustomerUrl(customer.getId()));
                     return customerDTO;
                 })
                 .collect(Collectors.toList());
@@ -41,21 +41,18 @@ public class CustomerServiceImpl implements CustomerService {
 
         return customerRepository.findById(id)
                 .map(customerMapper::customerTOCustomerDTO)
+                .map(customerDTO -> {
+                    //set API URL
+                    customerDTO.setCustomerUrl(getCustomerUrl(id));
+                    return customerDTO;
+                })
                 .orElseThrow(RuntimeException::new); //todo implement better exception handling
     }
 
     @Override
     public CustomerDTO createNewCustomer(CustomerDTO customerDTO) {
 
-        Customer customer = customerMapper.customerDtoToCustomer(customerDTO);
-
-        Customer savedCustomer = customerRepository.save(customer);
-
-        CustomerDTO returnDto = customerMapper.customerTOCustomerDTO(savedCustomer);
-
-        returnDto.setCustomerUrl(CONSUMERS_API + savedCustomer.getId());
-
-        return returnDto;
+        return saveAndReturnDTO(customerMapper.customerDtoToCustomer(customerDTO));
     }
 
     private CustomerDTO saveAndReturnDTO(Customer customer) {
@@ -63,7 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         CustomerDTO returnDto = customerMapper.customerTOCustomerDTO(savedCustomer);
 
-        returnDto.setCustomerUrl(CONSUMERS_API + savedCustomer.getId());
+        returnDto.setCustomerUrl(getCustomerUrl(savedCustomer.getId()));
 
         return returnDto;
     }
@@ -88,8 +85,17 @@ public class CustomerServiceImpl implements CustomerService {
                 customer.setLastName(customerDTO.getLastName());
             }
 
-            return customerMapper.customerTOCustomerDTO(customerRepository.save(customer));
+            CustomerDTO returnDto = customerMapper.customerTOCustomerDTO(customerRepository.save(customer));
+
+            returnDto.setCustomerUrl(getCustomerUrl(id));
+
+            return returnDto;
+
         }).orElseThrow(RuntimeException::new); //todo implement better exception handling;
+    }
+
+    private String getCustomerUrl(Long id) {
+        return CustomerController.BASE_URL + "/" + id;
     }
 
     @Override
