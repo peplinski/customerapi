@@ -2,7 +2,9 @@ package com.rest.customerapi.controllers.v1;
 
 
 import com.rest.customerapi.api.v1.model.CustomerDTO;
+import com.rest.customerapi.controllers.RestResponseEntityExceptionHandler;
 import com.rest.customerapi.services.CustomerService;
+import com.rest.customerapi.services.ResourceNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -39,7 +41,9 @@ public class CustomerControllerTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(customerController)
+                .setControllerAdvice(new RestResponseEntityExceptionHandler())
+                .build();
     }
 
     @Test
@@ -133,8 +137,20 @@ public class CustomerControllerTest {
     @Test
     public void testDeleteCustomer() throws Exception {
 
-        mockMvc.perform(delete("/api/v1/customers/1")).andExpect(status().isOk());
+        mockMvc.perform(delete("/api/v1/customers/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
         verify(customerService).deleteCustomerById(anyLong());
+    }
+
+    @Test
+    public void testNotFoundException() throws Exception {
+
+        when(customerService.getCustomerById(anyLong())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(get(CustomerController.BASE_URL + "/222")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
     }
