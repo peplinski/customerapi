@@ -4,7 +4,7 @@ import com.rest.customerapi.api.v1.mapper.CustomerMapper;
 import com.rest.customerapi.api.v1.model.CustomerDTO;
 import com.rest.customerapi.domain.Customer;
 import com.rest.customerapi.repositories.CustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
+
+    String CONSUMERS_API = "/api/v1/customers/";
 
     private final CustomerMapper customerMapper;
     private final CustomerRepository customerRepository;
@@ -28,7 +30,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .stream()
                 .map(customer -> {
                     CustomerDTO customerDTO = customerMapper.customerTOCustomerDTO(customer);
-                    customerDTO.setCustomerUrl("/api/v1/customers/" + customer.getId());
+                    customerDTO.setCustomerUrl(CONSUMERS_API + customer.getId());
                     return customerDTO;
                 })
                 .collect(Collectors.toList());
@@ -51,7 +53,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         CustomerDTO returnDto = customerMapper.customerTOCustomerDTO(savedCustomer);
 
-        returnDto.setCustomerUrl("/api/v1/customer/" + savedCustomer.getId());
+        returnDto.setCustomerUrl(CONSUMERS_API + savedCustomer.getId());
 
         return returnDto;
     }
@@ -61,7 +63,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         CustomerDTO returnDto = customerMapper.customerTOCustomerDTO(savedCustomer);
 
-        returnDto.setCustomerUrl("/api/v1/customer/" + savedCustomer.getId());
+        returnDto.setCustomerUrl(CONSUMERS_API + savedCustomer.getId());
 
         return returnDto;
     }
@@ -88,5 +90,10 @@ public class CustomerServiceImpl implements CustomerService {
 
             return customerMapper.customerTOCustomerDTO(customerRepository.save(customer));
         }).orElseThrow(RuntimeException::new); //todo implement better exception handling;
+    }
+
+    @Override
+    public void deleteCustomerById(Long id) {
+        customerRepository.deleteById(id);
     }
 }
