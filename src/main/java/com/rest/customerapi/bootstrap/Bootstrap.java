@@ -2,8 +2,10 @@ package com.rest.customerapi.bootstrap;
 
 import com.rest.customerapi.domain.Category;
 import com.rest.customerapi.domain.Customer;
+import com.rest.customerapi.domain.Vendor;
 import com.rest.customerapi.repositories.CategoryRepository;
 import com.rest.customerapi.repositories.CustomerRepository;
+import com.rest.customerapi.repositories.VendorRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +14,12 @@ public class Bootstrap implements CommandLineRunner {
 
     private CategoryRepository categoryRepository;
     private CustomerRepository customerRepository;
+    private VendorRepository vendorRepository;
 
-    public Bootstrap(CategoryRepository categoryRepository, CustomerRepository customerRepository) {
+    public Bootstrap(CategoryRepository categoryRepository, CustomerRepository customerRepository,VendorRepository vendorRepository) {
         this.categoryRepository = categoryRepository;
         this.customerRepository = customerRepository;
+        this.vendorRepository = vendorRepository;
     }
 
     @Override
@@ -23,6 +27,7 @@ public class Bootstrap implements CommandLineRunner {
 
         loadCustomers();
         loadCategories();
+        loadVendors();
 
     }
 
@@ -67,5 +72,16 @@ public class Bootstrap implements CommandLineRunner {
         customerRepository.save(customer2);
 
         System.out.println("Customers loaded = " + customerRepository.count());
+    }
+
+    private void loadVendors() {
+        Vendor vendor1 = new Vendor();
+        vendor1.setName("Vendor 1");
+        vendorRepository.save(vendor1);
+
+        Vendor vendor2 = new Vendor();
+        vendor2.setName("Vendor 2");
+        vendorRepository.save(vendor2);
+
     }
 }
