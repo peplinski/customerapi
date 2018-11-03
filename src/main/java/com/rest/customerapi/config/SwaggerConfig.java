@@ -29,7 +29,7 @@ public class SwaggerConfig { //} extends WebMvcConfigurationSupport {
 
     private ApiInfo metaData(){
 
-        Contact contact = new Contact("Krzysztof Pepliński", "https://www.linkedin.com/in/kpeplinski",
+        Contact contact = new Contact("Krzysztof Pepliński", "https://github.com/peplinski",
                 "peplinskikrzysztof@gmail.com");
 
         return new ApiInfo(
